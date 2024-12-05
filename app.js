@@ -25,7 +25,7 @@ const httpServer = createServer(app); // Create an HTTP server with express
 // Set up Socket.IO with CORS configuration
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Adjust this for production if needed
+    origin: ['http://localhost:5173','https://chat-app-frontend1.vercel.app/'], // Adjust this for production if needed
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
   },
