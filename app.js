@@ -131,7 +131,7 @@ app.disable("x-powered-by");
 //middleware
 app.use(helmet()); // Security middleware
 app.use(rateLimiter); // Rate limiting middleware
-app.use(responseTimeLogger); // Response time logging middleware
+// app.use(responseTimeLogger); // Response time logging middleware
 
 // CORS setup
 const corsOptions = {
