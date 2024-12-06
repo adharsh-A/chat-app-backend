@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App Backend API Documentation</title>
+    <style>
+        :root {
+            --background-dark: #121212;
+            --background-light-dark: #111111fe;
+            --text-primary: #E0E0E0;
+            --accent-color: #bd9eb9;
+            --border-color: #767474;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--background-light-dark);
+        }
+
+        html {
+            font-size: 16px; /* Base font size for responsive scaling */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--background-light-dark);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+            background-color: var(--background-dark);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .route {
+            background-color: var(--background-light-dark);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-radius: 4px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column on mobile */
+            gap: 0.75rem;
+        }
+
+        @media screen and (min-width: 768px) {
+            .feature-list {
+                grid-template-columns: repeat(2, 1fr); /* Two columns on tablets */
+            }
+        }
+
+        @media screen and (min-width: 1024px) {
+            .feature-list {
+                grid-template-columns: repeat(3, 1fr); /* Three columns on desktops */
+            }
+        }
+
+        .feature-item {
+            background-color: var(--background-light-dark);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+
+        h1, h2 { 
+            color: var(--accent-color); 
+            margin-bottom: 0.75rem;
+        }
+
+        h2 { 
+            font-size: 1.5rem; 
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .link-btn {
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            background-color: var(--accent-color);
+            color: var(--background-dark);
+            border-radius: 4px;
+            transition: transform 0.3s ease;
+            font-size: 0.9rem; /* Slightly smaller font for mobile */
+            text-align: center;
+            flex-grow: 1;
+            max-width: 200px;
+        }
+
+        .link-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Improved touch targets for mobile */
+        @media (max-width: 480px) {
+            .link-btn {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 0.5rem;
+            }
+
+            .route strong {
+                display: block;
+                margin-bottom: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Chat Application Backend API</h1>
+            <p>Comprehensive Backend Documentation</p>
+        </div>
+        <div class="section">
+            <h2>Deployment & Repository</h2>
+            <div class="links">
+                <a href="https://chat-app-frontend1.vercel.app/" class="link-btn" target="_blank">Live Deployment</a>
+                <a href="https://github.com/adharsh-a/chat-app-backend" class="link-btn" target="_blank">GitHub Repository</a>
+                <a href="https://adharsh-portfolio.netlify.app/" class="link-btn" target="_blank">Personal Portfolio</a>
+                <a href="https://www.linkedin.com/in/adharsh-boddul-6847a3235/" class="link-btn" target="_blank">Linkedin</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Project Overview</h2>
+            <p>A modern, scalable chat application with real-time messaging and user management capabilities.</p>
+        </div>
+
+        <div class="section">
+            <h2>Key Features</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h3>User Authentication</h3>
+                    <p>Secure user registration and login with JWT token-based authentication.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Real-Time Messaging</h3>
+                    <p>Instant message sending and receiving across multiple conversations.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Conversation Management</h3>
+                    <p>Create, join, and manage multiple conversation rooms with ease.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>User Discovery</h3>
+                    <p>Retrieve and interact with a list of all registered users.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Conversation History</h3>
+                    <p>Access and retrieve message history for each conversation.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Dynamic User Addition</h3>
+                    <p>Add new users to existing conversations seamlessly.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Authentication Routes (/api/auth)</h2>
+            <div class="route">
+                <strong>POST /signup</strong>
+                <p>Register a new user with email, password, and profile details</p>
+            </div>
+            <div class="route">
+                <strong>POST /login</strong>
+                <p>Authenticate user and generate JWT token</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Chat Routes (/api/chat)</h2>
+            <div class="route">
+                <strong>POST /conversations</strong>
+                <p>Create a new conversation/chat room</p>
+            </div>
+            <div class="route">
+                <strong>POST /messages</strong>
+                <p>Send a new message in a conversation</p>
+            </div>
+            <div class="route">
+                <strong>GET /conversations/:conversationId/messages</strong>
+                <p>Retrieve all messages for a specific conversation</p>
+            </div>
+            <div class="route">
+                <strong>GET /users/:userId/conversations</strong>
+                <p>Fetch all conversations for a specific user</p>
+            </div>
+            <div class="route">
+                <strong>POST /conversations/add-user</strong>
+                <p>Add a new user to an existing conversation</p>
+            </div>
+            <div class="route">
+                <strong>GET /users</strong>
+                <p>Retrieve list of all registered users</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

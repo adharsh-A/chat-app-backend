@@ -150,10 +150,13 @@ app.get("/test", (req, res) => {
   res.send("Test endpoint is working");
 });
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the API");
-});
-//routes
+  //send html file
+  app.get("/", (req, res) => {
+  // Send HTML file from public directory
+    res.sendFile('index.html', { root: './public' });
+  });
+
+    //routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 

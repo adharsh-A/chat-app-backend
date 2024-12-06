@@ -1,8 +1,9 @@
 import { User, Message, Conversation, ConversationParticipant } from '../models/associations.js';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { sequelize } from '../config/database.js';
 import { activeUsers } from '../app.js';
 import { loggererror, loggerinfo } from '../utils/winston.js';
+import HttpError from '../models/http-error.js';
 
 export const getAllUsers = async (req, res) => {
 
@@ -67,14 +68,43 @@ export const getAllUsers = async (req, res) => {
   }
 };
 // Create a new conversation
-export const createConversation = async (req, res) => {
+export const createConversation = async (req, res,next) => {
   try {
     const { participantIds } = req.body; // Array of user IDs
 
     if (participantIds.length < 2) {
       return res.status(400).json({ error: 'A conversation must include at least 2 participants.' });
     }
-
+    const existingConversation = await Conversation.findOne({
+      include: [
+        {
+          model: User,
+          as: 'participants',  // Alias for the association
+          where: {
+            id: {
+              [Op.in]: participantIds,  // Ensure the participants are part of the conversation
+            }
+          },
+          required: true,  // Forces the inner join between Conversation and User
+          attributes: []   // No need to fetch user attributes for this check
+        }
+      ],
+      where: {
+        // This condition checks that the conversation has exactly the same participants
+        id: {
+          [Op.in]: participantIds,
+        }
+      }
+    });
+    
+    // Check if the conversation exists
+    if (existingConversation) {
+      const io = req.app.get('io');
+      io.emit("notification", { message: "conversation already exists", type: "error" });
+      return next(new HttpError('Conversation already exists', 400));
+    }
+    
+    
     // Create the conversation
     const conversation = await Conversation.create();
 
@@ -89,12 +119,14 @@ export const createConversation = async (req, res) => {
         {
           model: User,
           as: 'participants',
+          attributes: ['id', 'username','avatar'], // Include only necessary fields
         },
       ],
     })
 
     res.status(201).json({ conversation: conversationData });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to create conversation.', details: error.message });
   }
 };
