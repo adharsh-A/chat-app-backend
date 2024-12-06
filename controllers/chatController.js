@@ -189,7 +189,7 @@ export const getConversationMessages = async (req, res) => {
     const messages = await Message.findAll({
       where: { conversationId },
       include: [
-        { model: User, as: 'sender', attributes: ['id', 'username'] },
+        { model: User, as: 'sender', attributes: ['id', 'username','isOnline'] },
       ],
       order: [['createdAt', 'ASC']],
     });
@@ -236,12 +236,8 @@ export const getUserConversations = async (req, res) => {
         avatar: participant.avatar,
       }));
     }
-    // const sortedConversations = conversations.sort((a, b) => {
-    //   const dateA = new Date(a.messages.createdAt);
-    //   const dateB = new Date(b.messages.createdAt);
-    //   return dateA - dateB; // Ascending order: earliest to latest
-    // });
-    
+
+
     
     // Send the response
     res.status(200).json({ conversations });
@@ -272,3 +268,20 @@ export const addUserToConversation = async (req, res) => {
     res.status(500).json({ error: 'Failed to add user to the conversation.', details: error.message });
   }
 };
+
+export const deleteConversation = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const conversation = await Conversation.findById(conversationId
+    );
+    if (!conversation) {
+      return res.status(404).json({ error: 'Conversation not found.' });
+    }
+    await conversation.destroy();
+    res.status(200).json({ message: 'Conversation deleted successfully.' })
+  } catch (error) {
+    loggererror.error(error);
+    res.status(500).json({ error: 'Failed to delete conversation.', details: error.message });
+  }
+    
+}

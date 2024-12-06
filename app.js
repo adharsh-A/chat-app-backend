@@ -16,6 +16,7 @@ import chatRoutes from './routes/chatRoutes.js';
 import Message from "./models/Message.js";
 import Conversation from "./models/Conversation.js";
 import ConversationParticipant from "./models/ConversationParticipant.js";
+import User from "./models/User.js";
 
 dotenv.config(); // Load environment variables
 
@@ -41,18 +42,21 @@ io.on("connection", (socket) => {
   const token = socket.handshake.auth.token; // Retrieve token
   const userId = socket.handshake.query.id; // Retrieve userId
 
+
   // Verify token (you might want to add your own token verification logic here)
   if (!token) {
     socket.disconnect(); // Disconnect if no token is present
     loggerwarn.warn("User disconnected due to missing token");
     return;
   }
-
-      // User authentication and connection
-      socket.on('authenticate', async (userId) => {
-        // Store user's socket connection
-        activeUsers.set(userId, socket.id);
-        socket.userId = userId;
+  
+  // User authentication and connection
+  socket.on('authenticate', async (userId) => {
+    // Store user's socket connection
+    activeUsers.set(userId, socket.id);
+    socket.userId = userId;
+    const currentUser = await User.findByPk(userId);
+        currentUser.isOnline = true;
         // Notify user's connections
         socket.broadcast.emit('userOnline', userId);
       });
@@ -107,7 +111,8 @@ io.on("connection", (socket) => {
         activeUsers.delete(socket.userId);
         socket.broadcast.emit('userOffline', socket.userId);
       }
-      io.emit("notification", {message: "You are now offline❌", description: "You are now offline!", type: "error"});
+      const currentUser = User.findByPk(userId);
+      currentUser.isOnline = false;
       loggererror.error('Client disconnected:', userId);
     });
   
