@@ -285,3 +285,38 @@ export const deleteConversation = async (req, res) => {
   }
     
 }
+export const getSingleUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findByPk(userId, {
+      attributes: ['username','email','avatar'],
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    loggererror.error(error);
+    res.status(500).json({ error: 'Failed to fetch user.', details: error.message });
+  }
+};
+export const putSingleUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { username, email, avatar } = req.body;
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    user.username = username;
+    user.email = email;
+    user.avatar = avatar;
+    await user.save();
+    const io = req.app.get('io');
+    io.emit("notification", {message: "Your profile has been updated", type: "success"});
+    res.status(200).json({ user });
+  } catch (error) {
+    loggererror.error(error);
+    res.status(500).json({ error: 'Failed to update user.', details: error.message });
+  }
+};

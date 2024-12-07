@@ -50,7 +50,15 @@ export const signup = async (req, res, next) => {
     });
     // Generate authentication token
     const token = generateToken(user.id);
-
+      // Set the token in an HTTP-only cookie
+      res.cookie("authToken", token, {
+        httpOnly: true,
+        // secure: process.env.NODE_ENV === "production",
+        secure: false,
+        sameSite: "None", // Required for cross-origin cookies
+        maxAge: 3600000,
+      });
+      
     res.status(201).json({
       message:"Signup successful",
       user: {
@@ -91,12 +99,23 @@ export const login = async (req, res, next) => {
 
     // Generate authentication token
     const token = generateToken(existingUser.id);
-
-    // Update user online status
-    existingUser.isOnline = true;
-    existingUser.lastSeen = new Date();
-    await existingUser.save();
-
+      // Set the token in an HTTP-only cookie
+      
+      // Update user online status
+      existingUser.isOnline = true;
+      existingUser.lastSeen = new Date();
+      await existingUser.save();
+      
+      res.cookie("authToken", token, {
+        httpOnly: true,
+        // secure: process.env.NODE_ENV === "production",
+        secure: false,
+        sameSite: "None", // Required for cross-origin cookies
+        maxAge: 3600000,
+      });
+      
+      
+      
     res.status(200).json({
       message: 'Logged in successfully',
       user: {

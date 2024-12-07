@@ -17,16 +17,20 @@ import Message from "./models/Message.js";
 import Conversation from "./models/Conversation.js";
 import ConversationParticipant from "./models/ConversationParticipant.js";
 import User from "./models/User.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config(); // Load environment variables
 
 const app = express();
 const httpServer = createServer(app); // Create an HTTP server with express
 
+// Middleware setup
+
+
 // Set up Socket.IO with CORS configuration
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:5173','https://chat-app-frontend1.vercel.app/'], // Adjust this for production if needed
+    origin: ['http://localhost:5173', 'https://chat-app-frontend1.vercel.app/'], // Adjust this for production if needed
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
   },
@@ -128,9 +132,19 @@ io.on("connection", (socket) => {
 app.set('io', io);
 
 // General middleware setup
-app.set('trust proxy', 1);
+
+// CORS setup
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://chat-app-frontend1.vercel.app/'], // Adjust for production
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight requests
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+// app.set('trust proxy', 1);
 app.disable("x-powered-by");
 
 //middleware
@@ -138,19 +152,11 @@ app.use(helmet()); // Security middleware
 app.use(rateLimiter); // Rate limiting middleware
 // app.use(responseTimeLogger); // Response time logging middleware
 
-// CORS setup
-const corsOptions = {
-  origin: "*", // Adjust for production
-  methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
-  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-};
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
-
 // Serve static files from the public directory
 app.use(express.static("public"));
 
 // API routes
+app.use(cookieParser());//for parsing cookies in req.cookies
 app.get("/test", (req, res) => {
   res.send("Test endpoint is working");
 });
