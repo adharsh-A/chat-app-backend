@@ -47,7 +47,6 @@ export const getAllUsers = async (req, res) => {
       attributes: ['id', 'username', 'email', 'avatar'], // Select only necessary fields
       order: [['createdAt', 'DESC']], // Optional: sort by most recent
     });
-
     // Map users to ensure consistent response structure
     const mappedUsers = users.map(user => ({
       id: user.id,
@@ -89,12 +88,7 @@ export const createConversation = async (req, res,next) => {
           attributes: []   // No need to fetch user attributes for this check
         }
       ],
-      where: {
-        // This condition checks that the conversation has exactly the same participants
-        id: {
-          [Op.in]: participantIds,
-        }
-      }
+
     });
     
     // Check if the conversation exists
@@ -189,7 +183,7 @@ export const getConversationMessages = async (req, res) => {
     const messages = await Message.findAll({
       where: { conversationId },
       include: [
-        { model: User, as: 'sender', attributes: ['id', 'username','isOnline'] },
+        { model: User, as: 'sender', attributes: ['id', 'username','isOnline','lastSeen'] },
       ],
       order: [['createdAt', 'ASC']],
     });
