@@ -17,9 +17,9 @@ const sequelize = new Sequelize(databaseUrl, {
     }
   },
   pool: {
-    max: 10,  // Maximum number of connections in the pool
+    max: 1000,  // Maximum number of connections in the pool
     min: 1,  // Minimum number of connections in the pool
-    acquire: 300000,  // Maximum time (in milliseconds) that pool will try to get a connection before throwing an error
+    acquire: 3000,  // Maximum time (in milliseconds) that pool will try to get a connection before throwing an error
     idle: 10000  // Maximum time (in milliseconds) that a connection can be idle before being released
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
