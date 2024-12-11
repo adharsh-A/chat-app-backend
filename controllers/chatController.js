@@ -21,15 +21,15 @@ export const getAllUsers = async (req, res) => {
     } = req.query;
 
     // Try to get from cache first
-    const cacheKey = `users:${exclude}:${search}:${limit}`;
-    const cachedUsers = await nodeCache.get(cacheKey);
+    // const cacheKey = `users:${exclude}:${search}:${limit}`;
+    // const cachedUsers = await nodeCache.get(cacheKey);
     
-    if (cachedUsers) {
-      return res.status(200).json({
-        users: cachedUsers,
-        fromCache: true
-      });
-    }
+    // if (cachedUsers) {
+    //   return res.status(200).json({
+    //     users: cachedUsers,
+    //     fromCache: true
+    //   });
+    // }
 
     // Build query conditions
     const where = {};
