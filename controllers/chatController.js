@@ -74,7 +74,7 @@ export const getAllUsers = async (req, res) => {
     }));
 
     // Cache the results for 5 minutes
-    await nodeCache.set(cacheKey, mappedUsers, 300);
+    // await nodeCache.set(cacheKey, mappedUsers, 300);
 
     res.status(200).json({
       users: mappedUsers,
