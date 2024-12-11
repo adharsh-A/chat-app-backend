@@ -20,7 +20,7 @@ router.post('/messages',isAuthenticatedUser, sendMessage);
 router.get('/conversations/:conversationId/messages',isAuthenticatedUser, getConversationMessages);
 router.get('/users/:userId/conversations',isAuthenticatedUser, getUserConversations);
 router.post('/conversations/add-user',isAuthenticatedUser, addUserToConversation);
-router.get('/users',isAuthenticatedUser, getAllUsers);
+router.get('/users', getAllUsers);
 router.delete("/conversations/:conversationId",isAuthenticatedUser, deleteConversation);
 router.get("/users/:userId",isAuthenticatedUser, getSingleUser);
 router.put("/users/:userId",isAuthenticatedUser, putSingleUser);
