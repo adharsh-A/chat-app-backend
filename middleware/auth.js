@@ -8,10 +8,10 @@ export const isAuthenticatedUser = async (req, res, next) => {
     return next();
   }
   try {
-    // const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1];
 
-    console.log("req.cookies.authToken:", req.cookies.authToken);
-    const token = req.cookies.authToken;
+    // console.log("req.cookies.authToken:", req.cookies.authToken);
+    // const token = req.cookies.authToken;
     if (!token) {
       return next(new HttpError('Authentication failed', 401));
     }
@@ -29,6 +29,7 @@ export const isAuthenticatedUser = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.log(error);
     next(new HttpError('Authentication failed', 401));
     loggererror.error(error);
   }

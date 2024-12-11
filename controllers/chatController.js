@@ -4,6 +4,10 @@ import { sequelize } from '../config/database.js';
 import { activeUsers } from '../app.js';
 import { loggererror, loggerinfo } from '../utils/winston.js';
 import HttpError from '../models/http-error.js';
+import jwt from "jsonwebtoken";
+import bcrypt from 'bcryptjs';
+import { sendEmail } from './utils/email.js'; // Replace with your email utility path
+
 
 export const getAllUsers = async (req, res) => {
 
@@ -312,5 +316,59 @@ export const putSingleUser = async (req, res) => {
   } catch (error) {
     loggererror.error(error);
     res.status(500).json({ error: 'Failed to update user.', details: error.message });
+  }
+};
+export const forgetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Generate a reset token valid for 1 hour
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Create the password reset link
+    const resetLink = process.env.NODE_ENV === 'production' ? `http://chat-app-frontend1.vercel.app/reset-password/${token}` : `http://localhost:5173/reset-password/${token}`;
+
+    // Send the reset link via email
+    await sendEmail(user.email, 'Password Reset Request',resetLink);
+
+    // Respond with success message
+    res.status(200).json({ message: 'Password reset link sent successfully, check your email✅.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to process the request.', details: error.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find the user associated with the token
+    const user = await User.findByPk(decoded.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid or expired token.' });
+    }
+
+    // Hash the new password
+
+    // Update the user's password
+    user.password = newPassword;
+    await user.save();
+
+    // Respond with success message
+    res.status(200).json({ message: 'Password reset successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to reset password.', details: error.message });
   }
 };

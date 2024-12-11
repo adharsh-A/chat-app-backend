@@ -7,20 +7,24 @@ import {
   addUserToConversation,
   getAllUsers,
   deleteConversation,
-  getSingleUser,putSingleUser
+  getSingleUser, putSingleUser,
+  forgetPassword,
+  resetPassword
 } from '../controllers/chatController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/conversations', createConversation);
-router.post('/messages', sendMessage);
-router.get('/conversations/:conversationId/messages', getConversationMessages);
-router.get('/users/:userId/conversations', getUserConversations);
-router.post('/conversations/add-user', addUserToConversation);
-router.get('/users', getAllUsers);
-router.delete("/conversations/:conversationId", deleteConversation);
-router.get("/users/:userId", getSingleUser);
-router.put("/users/:userId", putSingleUser);
+router.post('/conversations',isAuthenticatedUser, createConversation);
+router.post('/messages',isAuthenticatedUser, sendMessage);
+router.get('/conversations/:conversationId/messages',isAuthenticatedUser, getConversationMessages);
+router.get('/users/:userId/conversations',isAuthenticatedUser, getUserConversations);
+router.post('/conversations/add-user',isAuthenticatedUser, addUserToConversation);
+router.get('/users',isAuthenticatedUser, getAllUsers);
+router.delete("/conversations/:conversationId",isAuthenticatedUser, deleteConversation);
+router.get("/users/:userId",isAuthenticatedUser, getSingleUser);
+router.put("/users/:userId",isAuthenticatedUser, putSingleUser);
+router.post("/forget-password", forgetPassword)
+router.post("/reset-password/:token", resetPassword);
 
 export default router;
