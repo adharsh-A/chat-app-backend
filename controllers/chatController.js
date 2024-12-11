@@ -10,7 +10,7 @@ import { sendEmail } from './utils/email.js'; // Replace with your email utility
 
 import NodeCache from 'node-cache';
 
-const nodeCache = new NodeCache({ stdTTL:120 }); // Cache for 1 minute
+const nodeCache = new NodeCache(); // Cache for 1 minute
 export const getAllUsers = async (req, res) => {
 
   try {
@@ -21,15 +21,15 @@ export const getAllUsers = async (req, res) => {
     } = req.query;
 
     // Try to get from cache first
-    // const cacheKey = `users:${exclude}:${search}:${limit}`;
-    // const cachedUsers = await nodeCache.get(cacheKey);
+    const cacheKey = `users:${exclude}:${search}:${limit}`;
+    const cachedUsers = await nodeCache.get(cacheKey);
     
-    // if (cachedUsers) {
-    //   return res.status(200).json({
-    //     users: cachedUsers,
-    //     fromCache: true
-    //   });
-    // }
+    if (cachedUsers) {
+      return res.status(200).json({
+        users: cachedUsers,
+        fromCache: true
+      });
+    }
 
     // Build query conditions
     const where = {};
@@ -74,7 +74,7 @@ export const getAllUsers = async (req, res) => {
     }));
 
     // Cache the results for 5 minutes
-    // await nodeCache.set(cacheKey, mappedUsers, 300);
+    await nodeCache.set(cacheKey, mappedUsers, 300);
 
     res.status(200).json({
       users: mappedUsers,
@@ -202,6 +202,17 @@ export const sendMessage = async (req, res) => {
 export const getConversationMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
+    
+    // Check cache first
+    const cacheKey = `messages_${conversationId}`;
+    const cachedMessages = await nodeCache.get(cacheKey);
+    
+    if (cachedMessages) {
+      return res.status(200).json({ 
+        messages: cachedMessages,
+        fromCache: true
+      });
+    }
 
     const messages = await Message.findAll({
       where: { conversationId },
@@ -211,7 +222,14 @@ export const getConversationMessages = async (req, res) => {
       order: [['createdAt', 'ASC']],
     });
 
-    res.status(200).json({ messages });
+    // Cache the results for 5 minutes
+    nodeCache.set(cacheKey, messages, 300);
+
+
+    res.status(200).json({ 
+      messages,
+      fromCache: false 
+    });
   } catch (error) {
     loggererror.error(error);
     res.status(500).json({ error: 'Failed to fetch messages.', details: error.message });
