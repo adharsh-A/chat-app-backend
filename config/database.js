@@ -12,13 +12,13 @@ const sequelize = new Sequelize(databaseUrl, {
   dialectOptions: {
     connectTimeout:200000,
     ssl: {
-      require: false,
-      rejectUnauthorized: false
+      require: true,
+      rejectUnauthorized: true
     }
   },
   pool: {
     max: 5,  // Maximum number of connections in the pool
-    min: 0,  // Minimum number of connections in the pool
+    min: 1,  // Minimum number of connections in the pool
     acquire: 300000,  // Maximum time (in milliseconds) that pool will try to get a connection before throwing an error
     idle: 10000  // Maximum time (in milliseconds) that a connection can be idle before being released
   },
@@ -30,7 +30,10 @@ const connectDatabase = async () => {
   try {
     loggerinfo.info("Attempting to connect to the database...");
     sequelize.authenticate()
-    .then(() => loggerinfo.info('Connection successful!!!!!!!!!!!!!!!'))
+      .then(() => {
+        loggerinfo.info('Connection successful!!!!!!!!!!!!!!!')
+      console.log("Connection successful");
+    })
     .catch(err => loggererror.error('Unable to connect to the database:', err));
       loggererror.info( '✓✓✓✓ Database connection established successfully 🎉🎉');
   } catch (error) {

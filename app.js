@@ -30,7 +30,8 @@ const httpServer = createServer(app); // Create an HTTP server with express
 // Set up Socket.IO with CORS configuration
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:5173', 'https://chat-app-frontend1.vercel.app'], // Adjust this for production if needed
+    // origin: ['http://localhost:5173', 'https://chat-app-frontend1.vercel.app'], // Adjust this for production if needed
+    origin: "*",
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
   },
@@ -135,7 +136,8 @@ app.set('io', io);
 
 // CORS setup
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://chat-app-frontend1.vercel.app'], // Adjust for production
+  // origin: ['http://localhost:5173', 'https://chat-app-frontend1.vercel.app'], // Adjust for production
+  origin: "*",
   methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
   allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
 };
@@ -147,7 +149,7 @@ app.use(express.urlencoded({ extended: true }));
 app.disable("x-powered-by");
 
 //middleware
-app.use(helmet()); // Security middleware
+app.use(helmet()); 
 app.use(rateLimiter); // Rate limiting middleware
 // app.use(responseTimeLogger); // Response time logging middleware
 

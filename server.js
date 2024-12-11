@@ -2,7 +2,7 @@
 import { app, httpServer } from "./app.js";
 import dotenv from "dotenv";
 import { sequelize, connectDatabase } from "./config/database.js";
-import './models/associations.js'; // Ensure associations are set up
+// import './models/associations.js'; // Ensure associations are set up
 import { loggererror, loggerinfo } from "./utils/winston.js";
 
 dotenv.config(); // Load environment variables
@@ -10,6 +10,8 @@ dotenv.config(); // Load environment variables
 // Track connected sockets for cleanup during shutdown
 
 const startServer = async () => {
+
+  console.log("Connecting to the database...");
   try {
     // Sync the database in non-production environments
     if (process.env.NODE_ENV !== "production") {
@@ -58,7 +60,7 @@ const startServer = async () => {
         loggerinfo.info("Graceful shutdown completed");
         process.exit(0);
       } catch (error) {
-        loggerinfo.info("Error during shutdown:", error);
+        loggerinfo.info("Error during shutdown:", error.stack);
         process.exit(1);
       }
     };
@@ -77,7 +79,8 @@ const startServer = async () => {
       shutdown();
     });
   } catch (error) {
-    loggererror.error("Error starting server:", error);
+    // loggererror.error("Error starting server:", error);
+    console.log("Error starting server:", error.stack);
     process.exit(1);
   }
 };
