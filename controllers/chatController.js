@@ -88,7 +88,7 @@ export const getAllUsers = async (req, res) => {
     });
   }
   }
-};
+
 // Create a new conversation
 export const createConversation = async (req, res,next) => {
   try {
