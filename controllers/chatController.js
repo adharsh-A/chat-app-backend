@@ -8,15 +8,28 @@ import jwt from "jsonwebtoken";
 import bcrypt from 'bcryptjs';
 import { sendEmail } from './utils/email.js'; // Replace with your email utility path
 
+import NodeCache from 'node-cache';
 
+const nodeCache = new NodeCache({ stdTTL:120 }); // Cache for 1 minute
 export const getAllUsers = async (req, res) => {
 
   try {
     const {
-      exclude, // User ID to exclude
+      exclude, // User ID to exclude  
       search = '', // Optional search term
       limit = 50 // Optional limit to prevent overwhelming results
     } = req.query;
+
+    // Try to get from cache first
+    const cacheKey = `users:${exclude}:${search}:${limit}`;
+    const cachedUsers = await nodeCache.get(cacheKey);
+    
+    if (cachedUsers) {
+      return res.status(200).json({
+        users: cachedUsers,
+        fromCache: true
+      });
+    }
 
     // Build query conditions
     const where = {};
@@ -28,7 +41,7 @@ export const getAllUsers = async (req, res) => {
       };
     }
 
-    // Add search functionality
+    // Add search functionality 
     if (search) {
       where[Op.or] = [
         {
@@ -38,7 +51,7 @@ export const getAllUsers = async (req, res) => {
         },
         {
           email: {
-            [Op.iLike]: `%${search}%`
+            [Op.iLike]: `%${search}%` 
           }
         }
       ];
@@ -51,6 +64,7 @@ export const getAllUsers = async (req, res) => {
       attributes: ['id', 'username', 'email', 'avatar'], // Select only necessary fields
       order: [['createdAt', 'DESC']], // Optional: sort by most recent
     });
+    
     // Map users to ensure consistent response structure
     const mappedUsers = users.map(user => ({
       id: user.id,
@@ -59,15 +73,20 @@ export const getAllUsers = async (req, res) => {
       profilePicture: user.avatar || null
     }));
 
+    // Cache the results for 5 minutes
+    await nodeCache.set(cacheKey, mappedUsers, 300);
+
     res.status(200).json({
-      users: mappedUsers
+      users: mappedUsers,
+      fromCache: false
     });
   } catch (error) {
     loggererror.error('Failed to fetch users:', error);
     res.status(500).json({
-      error: 'Failed to fetch users',
+      error: 'Failed to fetch users', 
       details: error instanceof Error ? error.message : 'Unknown error'
     });
+  }
   }
 };
 // Create a new conversation
