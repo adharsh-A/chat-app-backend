@@ -135,7 +135,7 @@ app.set('io', io);
 
 // CORS setup
 const corsOptions = {
-  origin: `process.env.CLIENT_URL`, // Adjust for production
+  origin: process.env.CLIENT_URL, // Adjust for production
   credentials: true,
   methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
   allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
