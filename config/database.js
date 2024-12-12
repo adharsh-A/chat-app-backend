@@ -17,9 +17,9 @@ const sequelize = new Sequelize(databaseUrl, {
     }
   },
   pool: {
-    max: 1000,  // Maximum number of connections in the pool
+    max: 5,  // Maximum number of connections in the pool
     min: 1,  // Minimum number of connections in the pool
-    acquire: 3000,  // Maximum time (in milliseconds) that pool will try to get a connection before throwing an error
+    acquire: 30000,  // Maximum time (in milliseconds) that pool will try to get a connection before throwing an error
     idle: 10000  // Maximum time (in milliseconds) that a connection can be idle before being released
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
@@ -32,7 +32,6 @@ const connectDatabase = async () => {
     sequelize.authenticate()
       .then(() => {
         loggerinfo.info('Connection successful!!!!!!!!!!!!!!!')
-      console.log("Connection successful");
     })
     .catch(err => loggererror.error('Unable to connect to the database:', err));
       loggererror.info( '✓✓✓✓ Database connection established successfully 🎉🎉');

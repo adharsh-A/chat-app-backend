@@ -9,6 +9,7 @@ import { responseTimeLogger } from './middleware/responseTimeLogger.js';
 import rateLimiter from './middleware/rate-limiter.js';
 import HttpError from './models/http-error.js';
 import { loggerinfo, loggererror, loggerwarn, loggerdebug } from "./utils/winston.js";
+import compression from "compression";
 
 //routes
 import authRoutes from './routes/authRoutes.js';
@@ -151,6 +152,8 @@ app.disable("x-powered-by");
 //middleware
 app.use(helmet()); 
 app.use(rateLimiter); // Rate limiting middleware
+//reminder
+app.use(compression());
 // app.use(responseTimeLogger); // Response time logging middleware
 
 // Serve static files from the public directory

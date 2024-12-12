@@ -10,8 +10,6 @@ dotenv.config(); // Load environment variables
 // Track connected sockets for cleanup during shutdown
 
 const startServer = async () => {
-
-  console.log("Connecting to the database...");
   try {
     // Sync the database in non-production environments
     if (process.env.NODE_ENV !== "production") {
