@@ -151,8 +151,8 @@ app.disable("x-powered-by");
 
 //middleware
 app.use(helmet()); 
-app.use(rateLimiter); // Rate limiting middleware
 //reminder
+// app.use(rateLimiter); // Rate limiting middleware
 app.use(compression());
 // app.use(responseTimeLogger); // Response time logging middleware
 
