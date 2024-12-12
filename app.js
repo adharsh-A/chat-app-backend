@@ -150,8 +150,7 @@ app.disable("x-powered-by");
 
 //middleware
 app.use(helmet()); 
-//reminder:on this 
-// app.use(rateLimiter); // Rate limiting middleware
+app.use(rateLimiter); // Rate limiting middleware
 // app.use(responseTimeLogger); // Response time logging middleware
 
 // Serve static files from the public directory

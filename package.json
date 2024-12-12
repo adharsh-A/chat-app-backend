@@ -4,7 +4,11 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "start": "pm2 start server.js",
+    "stop": "pm2 stop server.js",
+    "restart": "pm2 restart server.js",
+    "logs": "pm2 logs",
+    "status": "pm2 status",
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post('/conversations',isAuthenticatedUser, createConversation);
 router.post('/messages',isAuthenticatedUser, sendMessage);
-router.get('/conversations/:conversationId/messages',isAuthenticatedUser, getConversationMessages);
+router.get('/conversations/:conversationId/messages', getConversationMessages);
 router.get('/users/:userId/conversations',isAuthenticatedUser, getUserConversations);
 router.post('/conversations/add-user',isAuthenticatedUser, addUserToConversation);
 router.get('/users', getAllUsers);
