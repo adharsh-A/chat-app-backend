@@ -204,15 +204,15 @@ export const getConversationMessages = async (req, res) => {
     const { conversationId } = req.params;
     
     // Check cache first
-    const cacheKey = `messages_${conversationId}`;
-    const cachedMessages = await nodeCache.get(cacheKey);
+    // const cacheKey = `messages_${conversationId}`;
+    // const cachedMessages = await nodeCache.get(cacheKey);
     
-    if (cachedMessages) {
-      return res.status(200).json({ 
-        messages: cachedMessages,
-        fromCache: true
-      });
-    }
+    // if (cachedMessages) {
+    //   return res.status(200).json({ 
+    //     messages: cachedMessages,
+    //     fromCache: true
+    //   });
+    // }
 
     const messages = await Message.findAll({
       where: { conversationId },
@@ -222,13 +222,10 @@ export const getConversationMessages = async (req, res) => {
       order: [['createdAt', 'ASC']],
     });
 
-    // Cache the results for 5 minutes
-    nodeCache.set(cacheKey, messages, 300);
 
 
     res.status(200).json({ 
-      messages,
-      fromCache: false 
+      messages
     });
   } catch (error) {
     loggererror.error(error);
