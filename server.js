@@ -16,7 +16,7 @@ const startServer = async () => {
     //   await sequelize.sync({ force: false, alter: false });
     //   loggerinfo.info("Database & tables created!");
     // }
-    await sequelize.sync({ force: false, alter: true }).catch((err) => {
+    await sequelize.sync({ force: false, alter: false }).catch((err) => {
       loggererror.error("Sequelize Sync Error:", err);
     });
     
