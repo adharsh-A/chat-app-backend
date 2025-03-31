@@ -187,7 +187,7 @@ export const createConversation = async (req, res, next) => {
       userId,
     }));
 
-    await ConversationParticipant.bulkCreate(participants);
+    const a=await ConversationParticipant.bulkCreate(participants);
 
     // Fetch the conversation data with participants
     const conversationData = await Conversation.findByPk(conversation.id, {
@@ -203,7 +203,7 @@ export const createConversation = async (req, res, next) => {
     res.status(201).json({ conversation: conversationData });
   } catch (error) {
     console.error("Error creating conversation:", error);
-    next(new HttpError("Failed to create conversation.", 500));
+    next(new HttpError(error, 500));
   }
 };
 // Send a message in a conversation

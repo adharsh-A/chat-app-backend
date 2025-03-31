@@ -14,12 +14,10 @@ ConversationParticipant.init(
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
-      references: [
-        {
-          model: "User",
-          key: "id",
-        },
-    ]
+      references: {
+        model: "User",
+        key: "id"
+      }
     },
     conversationId: {
       type: DataTypes.UUID,
@@ -36,7 +34,7 @@ ConversationParticipant.init(
   },
   {
     sequelize,
-    modelName: "conversationParticipant",
+    modelName: "conversationParticipant", 
     timestamps: true,
   }
 );
