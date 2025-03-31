@@ -24,10 +24,6 @@ Conversation.belongsToMany(User, {
   as: 'participants'
 });
 
-// ConversationParticipant associations
-ConversationParticipant.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-ConversationParticipant.belongsTo(Conversation, { foreignKey: 'conversationId', as: 'conversation' });
-ConversationParticipant.hasMany(Message, { foreignKey: 'conversationId', as: 'messages' });
 
 // Export all models
 export { User, Message, Conversation, ConversationParticipant };
