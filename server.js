@@ -2,7 +2,7 @@
 import { app, httpServer } from "./app.js";
 import dotenv from "dotenv";
 import { sequelize, connectDatabase } from "./config/database.js";
-// import './models/associations.js'; // Ensure associations are set up
+import './models/associations.js'; // Ensure associations are set up
 import { loggererror, loggerinfo } from "./utils/winston.js";
 
 dotenv.config(); // Load environment variables
@@ -12,10 +12,14 @@ dotenv.config(); // Load environment variables
 const startServer = async () => {
   try {
     // Sync the database in non-production environments
-    if (process.env.NODE_ENV !== "production") {
-      await sequelize.sync({ force: false, alter: false });
-      loggerinfo.info("Database & tables created!");
-    }
+    // if (process.env.NODE_ENV !== "production") {
+    //   await sequelize.sync({ force: false, alter: false });
+    //   loggerinfo.info("Database & tables created!");
+    // }
+    await sequelize.sync({ force: false, alter: true }).catch((err) => {
+      loggererror.error("Sequelize Sync Error:", err);
+    });
+    
 
     // Initialize database connection
     await connectDatabase();
