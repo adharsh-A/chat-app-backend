@@ -90,38 +90,94 @@ export const getAllUsers = async (req, res) => {
   }
 
 // Create a new conversation
-export const createConversation = async (req, res,next) => {
+// export const createConversation = async (req, res,next) => {
+//   try {
+//     const { participantIds } = req.body; // Array of user IDs
+
+//     if (participantIds.length < 2) {
+//       return res.status(400).json({ error: 'A conversation must include at least 2 participants.' });
+//     }
+//     const existingConversation = await Conversation.findOne({
+//       include: [
+//         {
+//           model: User,
+//           as: 'participants',  // Alias for the association
+//           where: {
+//             id: {
+//               [Op.in]: participantIds,  // Ensure the participants are part of the conversation
+//             }
+//           },
+//           required: true,  // Forces the inner join between Conversation and User
+//           attributes: []   // No need to fetch user attributes for this check
+//         }
+//       ],
+
+//     });
+    
+//     // Check if the conversation exists
+//     if (existingConversation) {
+//       const io = req.app.get('io');
+//       io.emit("notification", { message: "conversation already exists", type: "error" });
+//       return next(new HttpError('Conversation already exists', 400));
+//     }
+    
+    
+//     // Create the conversation
+//     const conversation = await Conversation.create();
+
+//     // Add participants
+//     const participants = participantIds.map((userId) => ({
+//       conversationId: conversation.id,
+//       userId,
+//     }));
+//     await ConversationParticipant.bulkCreate(participants);
+//     const conversationData = await Conversation.findByPk(conversation.id, {
+//       include: [
+//         {
+//           model: User,
+//           as: 'participants',
+//           attributes: ['id', 'username','avatar'], // Include only necessary fields
+//         },
+//       ],
+//     })
+
+//     res.status(201).json({ conversation: conversationData });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: 'Failed to create conversation.', details: error.message });
+//   }
+// };
+export const createConversation = async (req, res, next) => {
   try {
     const { participantIds } = req.body; // Array of user IDs
 
-    if (participantIds.length < 2) {
-      return res.status(400).json({ error: 'A conversation must include at least 2 participants.' });
+    if (!Array.isArray(participantIds) || participantIds.length < 2) {
+      return res.status(400).json({ error: "A conversation must include at least 2 participants." });
     }
+
+    // Check if the conversation with the exact same participants exists
     const existingConversation = await Conversation.findOne({
       include: [
         {
           model: User,
-          as: 'participants',  // Alias for the association
-          where: {
-            id: {
-              [Op.in]: participantIds,  // Ensure the participants are part of the conversation
-            }
-          },
-          required: true,  // Forces the inner join between Conversation and User
-          attributes: []   // No need to fetch user attributes for this check
-        }
+          as: "participants",
+          attributes: ["id"],
+          through: { attributes: [] }, // Exclude join table attributes
+        },
       ],
-
     });
-    
-    // Check if the conversation exists
+
     if (existingConversation) {
-      const io = req.app.get('io');
-      io.emit("notification", { message: "conversation already exists", type: "error" });
-      return next(new HttpError('Conversation already exists', 400));
+      const existingParticipantIds = existingConversation.participants.map((p) => p.id).sort();
+      const requestedParticipantIds = [...participantIds].sort();
+
+      if (JSON.stringify(existingParticipantIds) === JSON.stringify(requestedParticipantIds)) {
+        const io = req.app.get("io");
+        io.emit("notification", { message: "Conversation already exists", type: "error" });
+        return next(new HttpError("Conversation already exists", 400));
+      }
     }
-    
-    
+
     // Create the conversation
     const conversation = await Conversation.create();
 
@@ -130,24 +186,26 @@ export const createConversation = async (req, res,next) => {
       conversationId: conversation.id,
       userId,
     }));
+
     await ConversationParticipant.bulkCreate(participants);
+
+    // Fetch the conversation data with participants
     const conversationData = await Conversation.findByPk(conversation.id, {
       include: [
         {
           model: User,
-          as: 'participants',
-          attributes: ['id', 'username','avatar'], // Include only necessary fields
+          as: "participants",
+          attributes: ["id", "username", "avatar"], // Include only necessary fields
         },
       ],
-    })
+    });
 
     res.status(201).json({ conversation: conversationData });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Failed to create conversation.', details: error.message });
+    console.error("Error creating conversation:", error);
+    next(new HttpError("Failed to create conversation.", 500));
   }
 };
-
 // Send a message in a conversation
 export const sendMessage = async (req, res) => {
   try {
