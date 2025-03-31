@@ -187,7 +187,7 @@ export const createConversation = async (req, res, next) => {
       userId,
     }));
 
-    const a=await ConversationParticipant.bulkCreate(participants);
+    // const a=await ConversationParticipant.bulkCreate(participants);
 
     // Fetch the conversation data with participants
     const conversationData = await Conversation.findByPk(conversation.id, {
