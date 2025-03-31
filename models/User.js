@@ -49,7 +49,7 @@ User.init(
   },
   {
     sequelize,
-    modelName: "user",
+    modelName: "chat-app-user",
     timestamps: true,
     hooks: {
       beforeCreate: async (user) => {
